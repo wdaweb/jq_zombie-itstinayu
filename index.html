@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap"
+      rel="stylesheet"
+    />
+    <title>殭屍遊戲</title>
+    <style>
+      html {
+        width: auto;
+        height: auto;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+      }
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        background-image: url("https://wallpaperaccess.com/full/1256457.jpg");
+        background-repeat: no-repeat;
+        background-size: cover;
+      }
+      #game {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 800px;
+        height: 800px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.5);
+        overflow: hidden;
+        cursor: url(./cursor.png) 50 50, auto;
+      }
+      .infos {
+        position: fixed;
+        left: 50px;
+        bottom: 50px;
+        z-index: 10;
+        color: #fff;
+        font-size: 24px;
+      }
+      img {
+        height: 150px;
+        position: absolute;
+        user-select: none;
+        -webkit-user-select: none;
+        -webkit-user-drag: none;
+      }
+      .blood {
+        pointer-events: none;
+      }
+      .swal2-icon-content {
+        font-family: "Montserrat";
+      }
+      #game.moving {
+        animation: moving 1s infinite alternate;
+      }
+      @keyframes moving {
+        0% {
+          transform: translate(-700px, -400px);
+        }
+        100% {
+          transform: translate(50px, -400px);
+        }
+      }
+      button {
+        background-color: transparent;
+        font-size: 18px;
+        border: solid 1px rgb(50, 50, 50);
+        border-radius: 20px;
+        padding: 5px 10px;
+        color: rgb(50, 50, 50);
+        cursor: pointer;
+        outline: none;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 10;
+      }
+      button:hover {
+        background-color: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <button onclick="" id="btn-start">Start Game</button>
+    <br />
+
+    <div class="infos">
+      <h3>Score: <span id="text-score">0</span> 分</h3>
+      <h3>Remaining: <span id="text-time">0</span> 秒</h3>
+      <h3>Highest Score Player: <span id="text-highscorename">沒有</span></h3>
+      <h3>Highest Score: <span id="text-highscore">0</span> 分</h3>
+      <h3>
+        MODE: <br />
+        Restart : keyboard(R) <br />
+        Moving : keyboard(K)
+      </h3>
+    </div>
+    <div id="game"></div>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js"
+      integrity="sha512-aVKKRRi/Q/YV+4mjoKBsE4x3H+BkegoM/em46NNlCqNTmUYADjBbeNefNxYV7giUp0VxICtqdrbqU7iVaeZNXA=="
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+      // 分數
+      let score = 0;
+      let countdown = 0;
+      let timer = 0;
+      const highscore = localStorage.zombiegame
+        ? JSON.parse(localStorage.zombiegame)
+        : { name: "", score: 0 };
+      $("#text-highscorename").text(highscore.name);
+      $("#text-highscore").text(highscore.score);
+
+      function move(anna) {
+        const top = Math.round(Math.random() * 100) + "%";
+        const left = Math.round(Math.random() * 100) + "%";
+        anna.animate({ top, left }, 2000, function () {
+          if ($("#btn-start").attr("disabled") === "disabled") {
+            move(anna);
+          }
+        });
+      }
+
+      $("#btn-start").click(function () {
+        $(this).attr("disabled", true);
+        score = 0;
+        $("#text-score").text(score);
+        countdown = 10;
+        $("#text-time").text(countdown);
+        $("button").hide();
+        timer = setInterval(function () {
+          countdown--;
+          $("#text-time").text(countdown);
+
+          const random = Math.ceil(Math.random() * 10);
+          if (random > 5 && $(".anna").length < 5) {
+            const top = Math.round(Math.random() * 100) + "%";
+            const left = Math.round(Math.random() * 100) + "%";
+            const anna = $(
+              `<img src="./1.png" class="anna" data-label="1" style="top: ${top}; left: ${left} ">`
+            );
+            $("#game").append(anna);
+            move(anna);
+          }
+          if (random > 5 && $(".jigsaw").length < 5) {
+            const top = Math.round(Math.random() * 100) + "%";
+            const left = Math.round(Math.random() * 100) + "%";
+            const jigsaw = $(
+              `<img src="./2.png" class="jigsaw" data-label="2" style="top: ${top}; left: ${left}">`
+            );
+            $("#game").append(jigsaw);
+            move(jigsaw);
+          }
+          if (random > 5 && $(".billy").length < 5) {
+            const top = Math.round(Math.random() * 100) + "%";
+            const left = Math.round(Math.random() * 100) + "%";
+            const billy = $(
+              `<img src="./3.png" class="billy" data-label="3" style="top: ${top}; left: ${left}">`
+            );
+            $("#game").append(billy);
+            move(billy);
+          }
+          if (random > 5 && $(".chucky").length < 5) {
+            const top = Math.round(Math.random() * 100) + "%";
+            const left = Math.round(Math.random() * 100) + "%";
+            const chucky = $(
+              `<img src="./4.png" class="chucky" data-label="4" style="top: ${top}; left: ${left}">`
+            );
+            $("#game").append(chucky);
+            move(chucky);
+          }
+          if (random > 5 && $(".boy").length < 5) {
+            const top = Math.round(Math.random() * 100) + "%";
+            const left = Math.round(Math.random() * 100) + "%";
+            const boy = $(
+              `<img src="./5.png" class="boy" data-label="5" style="top: ${top}; left: ${left}">`
+            );
+            $("#game").append(boy);
+            move(boy);
+          }
+          if (random > 5 && $(".slappy").length < 5) {
+            const top = Math.round(Math.random() * 100) + "%";
+            const left = Math.round(Math.random() * 100) + "%";
+            const slappy = $(
+              `<img src="./6.png" class="slappy" data-label="6" style="top: ${top}; left: ${left}">`
+            );
+            $("#game").append(slappy);
+            move(slappy);
+          }
+          if (countdown === 0) {
+            clearInterval(timer);
+            $("#game img").remove();
+            $("#btn-start").attr("disabled", false);
+
+            if (score > highscore.score) {
+              Swal.fire({
+                icon: "info",
+                title: "時間到",
+                text: `最高分，你得到 ${score} 分`,
+                inputPlaceholder: "請輸入名字",
+                input: "text",
+                inputAttributes: {
+                  required: true,
+                },
+                validationMessage: "名稱必填",
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+              }).then((result) => {
+                highscore.score = score;
+                highscore.name = result.value;
+                $("#text-highscorename").text(highscore.name);
+                $("#text-highscore").text(highscore.score);
+                localStorage.zombiegame = JSON.stringify(highscore);
+              });
+            } else {
+              Swal.fire({
+                icon: "info",
+                title: "時間到",
+                text: `你得到 ${score} 分`,
+              });
+            }
+          }
+        }, 1000);
+      });
+      function resetGame() {
+        score = 0;
+        countdown = 0;
+        $("#text-score").text(score);
+        $("#text-time").text(countdown);
+        clearInterval(timer);
+        $("#game img").remove();
+        $("#btn-start").attr("disabled", false);
+        $("#game").removeClass("moving");
+        $("button").show();
+      }
+      $(window).keydown(function (evt) {
+        console.log(evt.key);
+        if (evt.key == "r") {
+          resetGame();
+        }
+        if (evt.key == "k") {
+          $("#game").toggleClass("moving");
+        }
+      });
+      $("#game").on(
+        "click",
+        ".anna,.jigsaw,.billy,.chucky,.boy,.slappy",
+        function () {
+          $(this).attr("src", "./blood.png");
+          $(this).removeClass().addClass("blood");
+          $(this).stop();
+          const num = $(this).attr("data-label");
+          score += parseInt(num * 5);
+          $("#text-score").text(score);
+        }
+      );
+    </script>
+  </body>
+</html>
